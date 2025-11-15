@@ -47,8 +47,11 @@ The initial reconnaissance phase involved a TCP SYN scan (`-sS`) with OS detecti
 
 The scan immediately revealed several open ports, including dangerously insecure services like **Telnet (port 23)** and **HTTP (port 80)**, providing clear attack vectors.
 
-![Nmap Scan Output](.assets/Nmap%20scan%20output%20(VMB).png)
-*Figure 1: Nmap scan output showing open ports on the victim VM*
+<p align="center">
+  <img src=".assets/Nmap%20scan%20output%20(VMB).png" alt="Nmap Scan Output">
+  <br>
+  <em>Figure 1: Nmap scan output showing open ports on the victim VM</em>
+</p>
 
 ### 2. Plaintext Credential Interception (Telnet)
 
@@ -61,8 +64,11 @@ Since Telnet transmits all data in **plaintext**, the attacker was able to captu
 
 This finding demonstrates the extreme risk of using legacy, unencrypted protocols.
 
-![Telnet Credentials in Wireshark](.assets/Telnet%20credentials.png)
-*Figure 2: Wireshark "Follow TCP Stream" revealing plaintext credentials*
+<p align="center">
+  <img src=".assets/Telnet%20credentials.png" alt="Telnet Credentials in Wireshark">
+  <br>
+  <em>Figure 2: Wireshark "Follow TCP Stream" revealing plaintext credentials</em>
+</p>
 
 ### 3. TCP Session Hijacking (RST Attack)
 
@@ -70,8 +76,11 @@ To demonstrate an active attack, a TCP reset (RST) packet was spoofed using `hpi
 
 By sending a packet with the RST flag set, the victim's TCP stack was tricked into believing the session was no longer valid, immediately closing the connection. The **red packet (No. 2128)** in the Wireshark capture below is the spoofed RST packet that successfully killed the session.
 
-![TCP RST Packet in Wireshark](.assets/TCP%20RST%20Packet.png)
-*Figure 3: Spoofed TCP RST packet (red) terminating the Telnet session*
+<p align="center">
+  <img src=".assets/TCP%20RST%20Packet.png" alt="TCP RST Packet in Wireshark">
+  <br>
+  <em>Figure 3: Spoofed TCP RST packet (red) terminating the Telnet session</em>
+</p>
 
 ### 4. Denial of Service (Slowloris Attack)
 
@@ -83,15 +92,21 @@ The most significant offensive test was a **Slowloris DoS attack** against the v
 
 The attack was highly effective. The Apache server's connection pool was completely exhausted, with all **150 available worker threads** being consumed by the Slowloris tool. The `ps -elf` command on the victim server shows a massive list of `apache2` processes, all occupied by the attack, effectively locking out any legitimate users.
 
-![Apache Worker Threads Exhausted by Slowloris](.assets/Apache%20Thread%20for%20Slowloirs%20attack%20(1).png)
-*Figure 4: Apache worker threads exhausted on the victim server during the attack*
+<p align="center">
+  <img src=".assets/Apache%20Thread%20for%20Slowloirs%20attack%20(1).png" alt="Apache Worker Threads Exhausted by Slowloris">
+  <br>
+  <em>Figure 4: Apache worker threads exhausted on the victim server during the attack</em>
+</p>
 
 #### Client-Side Impact: Site Unreachable
 
 From a legitimate user's perspective, the server was completely inaccessible. Any attempt to access the website at `44.65.10.55` resulted in a connection timeout error, as the server had no available threads to respond to new requests.
 
-![Browser error during Slowloris attack](.assets/Slowloris%20DoS%20%E2%80%9CSite%20Can%E2%80%99t%20Be%20Reached%E2%80%9D.png)
-*Figure 5: Legitimate user view showing the site is unreachable*
+<p align="center">
+  <img src=".assets/Slowloris%20DoS%20%E2%80%9CSite%20Can%E2%80%99t%20Be%20Reached%E2%80%9D.png" alt="Browser error during Slowloris attack">
+  <br>
+  <em>Figure 5: Legitimate user view showing the site is unreachable</em>
+</p>
 
 ---
 
